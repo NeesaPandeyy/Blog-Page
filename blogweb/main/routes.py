@@ -8,6 +8,10 @@ main = Blueprint('main',__name__)
 @main.route("/home")
 @login_required
 def home():
+    """
+    A page where list of posts are displayed with pagination.
+    This page is accessed by authenticated users.
+    """
     page = request.args.get('page', 1, type=int)
     posts = Post.query.order_by(Post.date_posted.desc()).paginate(page=page, per_page=3)
     return render_template('home.html', posts=posts)
@@ -17,6 +21,12 @@ def home():
 @main.route("/account/<username>")
 @login_required
 def account(username=None):
+    """
+    Displays the curent users profile with their posts if username is not
+    provided.
+    
+    If username is provided, it displays the posts of given username
+    """
     profile = url_for('static', filename='profilefile/' + current_user.profile)
 
     if username:

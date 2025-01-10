@@ -9,10 +9,17 @@ account = Blueprint('account',__name__)
 
 @account.route("/register",methods = ['POST','GET'])
 def register():
+    """
+    Handles user registration process.
+
+    If the given data are valid then it creates user,create and save hashed password
+    in database.Also flashes a success message.
+    
+    """
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username= form.username.data,email=form.email.data,password=hashed_password)
+        user = User(username= form.username.data.lower(),email=form.email.data,password=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('Account created successfully!!','success')
@@ -21,6 +28,14 @@ def register():
 
 @account.route("/login", methods=['GET', 'POST'])
 def login():
+    """
+    Handles user login process.
+
+    If the given data are valid then users are directed to home page and 
+    flashes a success message.But if data are not valid it flashes a unsuccessful
+    message.
+    
+    """
     form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
@@ -37,5 +52,8 @@ def login():
 
 @account.route("/logout")
 def logout():
+    """
+    Logout the user and redirect them to login page.
+    """
     logout_user()
-    return redirect(url_for('main.home'))
+    return redirect(url_for('account.login'))
